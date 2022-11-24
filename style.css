@@ -33,6 +33,26 @@ header {
   text-align: center;
 }
 
+.result-display {
+  font-size: 28px;
+  border: 1px solid green;
+}
+
+.number-input {
+  border: 1px solid red;
+}
+
+.operation-input {
+  border: 1px solid blue;
+  
+}
+
+.result-display,
+.number-input,
+.operation-input {
+  height: 50px;
+}
+
 .button-wrapper {
   display: flex;
   justify-content: space-between;
@@ -65,5 +85,5 @@ header {
 .number {
   width: 33%;
   height: 50px;
-
 }
+

@@ -1,66 +1,103 @@
-const inputDisplay = document.querySelector('.input-display')
 const numberInputDisplay = document.querySelector('.number-input')
 const operationInputDisplay = document.querySelector('.operation-input')
 const resultDisplay = document.querySelector('.result-display')
 const numbers = document.querySelectorAll('.number')
 const operations = document.querySelectorAll('.operation-btn')
 const equalsBtn = document.querySelector('.equals')
-let isLastInsertOperation = true
-let firstOperand = ''
+const resetBtn = document.querySelector('.reset')
+let isLastInsertOperation = false
+let answer = ''
 let actualOperation = ''
+let nextNumber = ''
 
 window.onload = () => {
   numbers.forEach((number) => {
     number.addEventListener('click', checkNumber)
   })
-
   operations.forEach((operation) => {
     operation.addEventListener('click', checkOperation)
   })
-
   equalsBtn.addEventListener('click', equals)
+  resetBtn.addEventListener('click', reset)
+}
+
+const reset = () => {
+  isLastInsertOperation = false
+  answer = ''
+  actualOperation = ''
+  nextNumber = ''
+  numberInputDisplay.innerHTML = ''
+  resultDisplay.innerHTML = ''
+  operationInputDisplay.innerHTML = ''
 }
 
 const equals = () => {
-  nextNumber = numberInputDisplay.innerText
-  firstOperand = calculate(nextNumber)
-  appendResultToDisplay(firstOperand)
+  if (
+    (isLastInsertOperation && actualOperation != '√') ||
+    actualOperation == ''
+  ) {
+    return
+  }
+
+  getResult()
+  actualOperation = ''
+  appendOperationToDisplay(actualOperation)
+  isLastInsertOperation = true
+}
+
+function getResult() {
+  nextNumber = getNumberInInputDisplay()
+  answer = calculate(nextNumber)
+  numberInputDisplay.innerHTML = ''
+  appendResultToDisplay(answer)
 }
 
 const checkNumber = (event) => {
-  console.log('checko il number')
   let number = event.target.value
-  if (isLastInsertOperation) {
-    isLastInsertOperation = false
-  }
   isLastInsertOperation = false
-
   appendNumberToDisplay(number)
+  if (actualOperation == '') {
+    updateResultDisplay()
+  }
 }
 
 const checkOperation = (event) => {
-  actualOperation = event.target.value
-  appendOperationToDisplay()
+  let operation = event.target.value
+  appendOperationToDisplay(operation)
   if (isLastInsertOperation) {
-    console.log(actualOperation)
-    isLastInsertOperation = true
+    updateActualOperation(operation)
     return
   }
-  isLastInsertOperation = true
-  nextNumber = numberInputDisplay.innerText
-  firstOperand = calculate(nextNumber)
-  appendResultToDisplay(firstOperand)
+  if (actualOperation != '') {
+    getResult()
+    updateActualOperation(operation)
+    return
+  }
+  updateResultDisplay()
+  updateActualOperation(operation)
   numberInputDisplay.innerText = ''
-  console.log('sono firstOperand ' + firstOperand)
-  console.log(inputDisplay.innerText)
+}
+
+const updateActualOperation = (operation) => {
+  actualOperation = operation
+  isLastInsertOperation = true
+}
+
+const updateResultDisplay = () => {
+  resultDisplay.innerHTML = getNumberInInputDisplay()
+  answer = getNumberInInputDisplay()
+}
+
+const getNumberInInputDisplay = () => {
+  return numberInputDisplay.innerText
 }
 
 const appendNumberToDisplay = (number) => {
   numberInputDisplay.innerHTML += number
 }
 
-const appendOperationToDisplay = () => {
-  operationInputDisplay.innerHTML = actualOperation
+const appendOperationToDisplay = (operation) => {
+  operationInputDisplay.innerHTML = operation
 }
 
 const appendResultToDisplay = (result) => {
@@ -71,63 +108,47 @@ const calculate = (nextNumber) => {
   switch (actualOperation) {
     case '+':
       return sum(nextNumber)
-
     case '-':
       return difference(nextNumber)
-
     case '/':
       return division(nextNumber)
-
     case '*':
       return multiplication(nextNumber)
-
     case '^':
       return power(nextNumber)
-
-    case '&radic;':
+    case '√':
       return squareRoot(nextNumber)
-
     case '%':
       return percent(nextNumber)
-
-    // case '=':
-    //   return
   }
 }
 
 // OPERATIONS
 
 const sum = (nextNumber) => {
-  console.log(firstOperand, nextNumber)
-
-  return +firstOperand + +nextNumber
+  return +answer + +nextNumber
 }
 
 const difference = (nextNumber) => {
-  console.log(firstOperand, nextNumber)
-
-  return +firstOperand - +nextNumber
+  return +answer - +nextNumber
 }
 
 const multiplication = (nextNumber) => {
-  console.log(firstOperand, nextNumber)
-
-  return +firstOperand * +nextNumber
+  return +answer * +nextNumber
 }
 
 const division = (nextNumber) => {
-  console.log(firstOperand, nextNumber)
-  return +firstOperand / +nextNumber
+  return +answer / +nextNumber
 }
 
 const power = (nextNumber) => {
-  return Math.pow(+firstOperand, +nextNumber)
+  return Math.pow(+answer, +nextNumber)
 }
 
-const squareRoot = (nextNumber) => {
-  return Math.sqrt(+firstOperand)
+const squareRoot = () => {
+  return Math.sqrt(+answer)
 }
 
 const percent = (nextNumber) => {
-  return 'percent fatta'
+  return (100 * answer) / nextNumber
 }
